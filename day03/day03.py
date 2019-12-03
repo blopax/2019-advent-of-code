@@ -183,3 +183,5 @@ if __name__ == '__main__':
     Steps time: {}
     """.format(input_time - start, create_map_time - input_time, get_contact_time - create_map_time,
                manhattan_time - get_contact_time, steps_time - manhattan_time))
+
+# The use of complex numbers would probably be more elegant.
