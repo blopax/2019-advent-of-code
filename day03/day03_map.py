@@ -10,10 +10,8 @@ def get_dict_from_dir(direction_str):
     return direction_dict
 
 
-def get_input(input_path):
-    with open(input_path) as f:
-        map_string = f.read().strip()
-    map_list = map_string.split('\n')
+def get_input(map_input):
+    map_list = map_input.split('\n')
     wire0_raw = map_list[0].split(',')
     wire1_raw = map_list[1].split(',')
     wire0 = [get_dict_from_dir(item) for item in wire0_raw]
@@ -151,10 +149,26 @@ def get_min_combined_steps(contact, position, wire0, wire1):
     return min_combined_steps, closest_steps
 
 
-if __name__ == '__main__':
-    start = time.time()
+def full_test(map_input):
+    w_instructions_0, w_instructions_1 = get_input(map_input)
+    w_map, initial_position = draw_initial_map(w_instructions_0, w_instructions_1)
+    draw_wire(w_map, w_instructions_0, initial_position, 1)
+    draw_wire(w_map, w_instructions_1, initial_position, 2)
+    y, x = np.where(w_map == 3)
+    contact = zip(y, x)
+    manhattan_distance, _ = get_min_manhattan_distance(contact, initial_position)
+    contact = zip(y, x)
+    steps, _ = get_min_combined_steps(contact, initial_position, w_instructions_0, w_instructions_1)
+    return manhattan_distance, steps
 
-    wire_a, wire_b = get_input('input03.txt')
+
+if __name__ == '__main__':
+    start_time = time.time()
+
+    with open('input03.txt') as f:
+        map_string = f.read().strip()
+
+    wire_a, wire_b = get_input(map_string)
     # wire_a, wire_b = get_input('input03_test.txt')
     input_time = time.time()
 
@@ -163,8 +177,8 @@ if __name__ == '__main__':
     draw_wire(wire_map, wire_b, init_position, 2)
     create_map_time = time.time()
 
-    y, x = np.where(wire_map == 3)
-    wire_contact = zip(y, x)
+    index_y, index_x = np.where(wire_map == 3)
+    wire_contact = zip(index_y, index_x)
     get_contact_time = time.time()
 
     min_manhattan_distance, closest = get_min_manhattan_distance(wire_contact, init_position)
@@ -181,7 +195,6 @@ if __name__ == '__main__':
     Find intersections time: {}
     Manhattan time: {}
     Steps time: {}
-    """.format(input_time - start, create_map_time - input_time, get_contact_time - create_map_time,
-               manhattan_time - get_contact_time, steps_time - manhattan_time))
-
-# The use of complex numbers would probably be more elegant.
+    Total Time: {}
+    """.format(input_time - start_time, create_map_time - input_time, get_contact_time - create_map_time,
+               manhattan_time - get_contact_time, steps_time - manhattan_time, steps_time - start_time))
