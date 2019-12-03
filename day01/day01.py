@@ -1,10 +1,9 @@
 import math
 
 
-def get_modules_mass(input):
-    with open(input) as f:
-        input_str = f.read()
-    input_list = input_str.strip().split('\n')
+def get_modules_mass(input_path):
+    with open(input_path) as f:
+        input_list = f.readlines()
     return [int(x) for x in input_list]
 
 
@@ -32,4 +31,3 @@ if __name__ == '__main__':
     modules_mass_list = get_modules_mass('input01.txt')
     print("Sum of fuel requirement part one: {}".format(sum_fuel(modules_mass_list, fuel_for_mass)))
     print("Sum of fuel requirement part two: {}".format(sum_fuel(modules_mass_list, fuel_for_module)))
-

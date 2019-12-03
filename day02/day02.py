@@ -4,8 +4,7 @@ import copy
 def get_input(input_path):
     with open(input_path) as f:
         input_str = f.read()
-    input_list = input_str.strip().split(',')
-    return [int(x) for x in input_list]
+    return [int(x) for x in input_str.strip().split(',')]
 
 
 def restore_initial_values(program, input_noun, input_verb):
