@@ -22,10 +22,25 @@ def get_input(input_path):
 
 
 def get_wire_size(wire):
-    right = sum([item['distance'] for item in wire if item['side'] == 'R'])
-    left = sum([item['distance'] for item in wire if item['side'] == 'L'])
-    up = sum([item['distance'] for item in wire if item['side'] == 'U'])
-    down = sum([item['distance'] for item in wire if item['side'] == 'D'])
+    right, left, up, down = 0, 0, 0, 0
+    horizontal, vertical = 0, 0
+    for instruction in wire:
+        if instruction['side'] == 'R':
+            horizontal += instruction['distance']
+        elif instruction['side'] == 'L':
+            horizontal -= instruction['distance']
+        elif instruction['side'] == 'U':
+            vertical -= instruction['distance']
+        elif instruction['side'] == 'D':
+            vertical += instruction['distance']
+        if horizontal > right:
+            right = horizontal
+        elif -horizontal > left:
+            left = -horizontal
+        elif vertical > down:
+            down = vertical
+        elif -vertical > up:
+            up = -vertical
     return right, left, up, down
 
 
