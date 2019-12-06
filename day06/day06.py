@@ -1,45 +1,36 @@
+import time
 
 
 class Node:
-    def __init__(self, name, parent=None, is_child=False):
+    def __init__(self, name, parent=None):
         self.name = name
         self.parent = parent
-        self.is_child = is_child
-        self.counted = False
 
 
 class Map:
     def __init__(self, lines_list):
         self.lines_list = lines_list
-        self.nodes_list = []
-        self.nodes_names_list = []
+        self.nodes_list = set()
+        self.nodes_names_list = set()
 
     def process_lines(self):
         for line in self.lines_list:
             self.process_line(line)
 
     def process_line(self, line):
-        parent, child = line.split(')')
-        if parent not in self.nodes_names_list:
-            self.nodes_list.append(Node(parent))
-            self.nodes_names_list.append(parent)
+        parent_name, child_name = line.split(')')
+        if parent_name not in self.nodes_names_list:
+            parent = Node(parent_name)
         else:
-            self.update_node(name=parent, parent=None, is_child=False)
-
-        if child not in self.nodes_names_list:
-            self.nodes_list.append(Node(child, parent=parent, is_child=True))
-            self.nodes_names_list.append(child)
+            parent = self.get_node(parent_name)
+        if child_name not in self.nodes_names_list:
+            child = Node(child_name)
         else:
-            self.update_node(name=child, parent=parent, is_child=True)
+            child = self.get_node(child_name)
+        child.parent = parent
 
-    def update_node(self, name, parent, is_child):
-        node = self.get_node(name=name)
-        if parent is not None:
-            if node.parent is not None:
-                print(node.name, node.parent, parent)
-            node.parent = parent
-        if node.is_child is True and is_child is False:
-            node.is_child = False
+        self.nodes_list = self.nodes_list | {parent, child}
+        self.nodes_names_list = self.nodes_names_list | {parent_name, child_name}
 
     def get_node(self, name):
         for node in self.nodes_list:
@@ -52,10 +43,11 @@ class Map:
             count += self.new_path_to_root(node)
         return count
 
-    def new_path_to_root(self, node):
+    @staticmethod
+    def new_path_to_root(node):
         count = 0
         while node.parent is not None:
-            node = self.get_node(node.parent)
+            node = node.parent
             count += 1
         return count
 
@@ -65,24 +57,39 @@ class Map:
         node1_parents = []
         node2_parents = []
         while node1.parent is not None:
-            node1 = self.get_node(node1.parent)
+            node1 = node1.parent
             node1_parents.append(node1.name)
         while node2.parent is not None:
-            node2 = self.get_node(node2.parent)
+            node2 = node2.parent
             node2_parents.append(node2.name)
         return set(node1_parents) ^ set(node2_parents)
 
 
 if __name__ == '__main__':
+    start_time = time.time()
+
     input_path = 'input06.txt'
     with open(input_path) as f:
         input_list = f.readlines()
     lines = [item.strip() for item in input_list]
-    # print(lines_list)
+    input_time = time.time()
 
     santa_map = Map(lines)
     santa_map.process_lines()
+    map_time = time.time()
+    
     orbit_count_checksum = santa_map.orbit_count_checksum()
-    print(orbit_count_checksum)
-    answer_set = santa_map.get_parent_nodes_that_are_not_in_common("YOU", "SAN")
-    print(len(answer_set))
+    check_time = time.time()
+
+    orbital_transfers = santa_map.get_parent_nodes_that_are_not_in_common("YOU", "SAN")
+    end_time = time.time()
+
+    output = """
+    Input treatment time: {}
+    Map creation time: {}
+    Orbit count checksum: {} (time needed {}s)
+    Minimum orbital transfer required: {} (time needed {}s)
+    Total Time: {}
+    """.format(input_time - start_time, map_time - input_time, orbit_count_checksum, check_time - map_time,
+               len(orbital_transfers), end_time - check_time, end_time - start_time)
+    print(output)
