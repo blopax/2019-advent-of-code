@@ -1,4 +1,3 @@
-
 def get_input(input_path):
     with open(input_path) as f:
         input_str = f.read().strip()
@@ -16,6 +15,7 @@ if __name__ == '__main__':
         i += layer_size
 
     min_0 = layer_size + 1
+    total = 0
     for layer in layers:
         count_0 = layer.count("0")
         if count_0 < min_0:
@@ -38,4 +38,3 @@ if __name__ == '__main__':
         layer_lines.append(''.join(final_layer[i: i + 25]).replace('0', ' ').replace('1', '@'))
         i += 25
     print('\n'.join(layer_lines))
-
